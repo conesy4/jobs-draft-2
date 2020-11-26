@@ -22,22 +22,24 @@
 #
 class Job < ApplicationRecord
   
-  has_many(:jobs, { :class_name => "Job", :foreign_key => "firm_id" })
-
-  has_many(:bookmarks, { :class_name => "Bookmark", :foreign_key => "firm_id" })
-
-  has_many(:employees, { :class_name => "Employee", :foreign_key => "firm_id" })
-
+  belongs_to(:user, { :required => false, :class_name => "User", :foreign_key => "user_id", :counter_cache => true })
+  
+  belongs_to(:firm, { :required => false, :class_name => "Firm", :foreign_key => "firm_id", :counter_cache => true })
+  
+  has_many(:communications, { :class_name => "Communication", :foreign_key => "job_id" })
+  
+  has_many(:advocates, { :class_name => "Advocate", :foreign_key => "job_id", :dependent => :destroy })
+  
   #Add Indirect Associations (Guide)
-
-  has_many(:connections, { :through => :employees, :source => :connections })
-
-  has_many(:communications, { :through => :connections, :source => :communications })
-
+  
+  has_many(:contacts, { :through => :advocates, :source => :contact })
+  
   #Add Validations (Guide)
-
-  validates(:name, { :presence => true })
-
-  validates(:industry, { :inclusion => { :in => [ "Retail", "Tech", "CPG", "Consulting", "Finance", "Marketing", "Other" ] } })
+  
+  validates(:user_id, { :presence => true })
+  
+  validates(:role, { :presence => true })
+  
+  validates(:firm_id, { :presence => true })
 
 end
